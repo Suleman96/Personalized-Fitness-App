@@ -32,7 +32,7 @@ from sqlalchemy.ext.declarative import declarative_base
 from sqlalchemy.orm import sessionmaker
 import os
 
-#os.remove('trainer.db')
+# os.remove('trainer.db')
 engine = create_engine('sqlite:///trainer.db', echo=True)
 Base = declarative_base()
 
@@ -40,6 +40,7 @@ Session = sessionmaker(bind=engine)
 session = Session()
 #################################  SQL Shit ####################################
 # [{email: "nabil", password: "1", name: "mns"} ]
+
 
 class User(Base):
     __tablename__ = "user"
@@ -50,8 +51,8 @@ class User(Base):
     weight = Column(String)
     gender = Column(String)
     jp = Column(String)
-    
-    def __init__(self, email, password, name='', age='',weight='', gender='', jp=''):
+
+    def __init__(self, email, password, name='', age='', weight='', gender='', jp=''):
         self.email = email
         self.password = password
         self.name = name
@@ -60,10 +61,10 @@ class User(Base):
         self.gender = gender
         self.jp = jp
 
-Base.metadata.create_all(engine)
+
+Base.metadata.create_all(engine) 
 
 ############################################################################
-
 
 
 ##############################################################################
@@ -71,8 +72,8 @@ Base.metadata.create_all(engine)
 
 logged_in_user = None
 
+
 class LoginScreen(Screen):
-    
 
     def loginBtn(self):
         email = ObjectProperty(None)
@@ -81,21 +82,24 @@ class LoginScreen(Screen):
         password_input = self.password.text
         print(email_input)
         print(password_input)
-        valid = session.query(User).filter(User.email == email_input, User.password == password_input).count()
+        valid = session.query(User).filter(
+            User.email == email_input, User.password == password_input).count()
         if valid == 0 or (email_input == '' or password_input == ''):
-        #if valid == 0:
+            # if valid == 0:
             print("Invalid email or password")
         else:
-            result = session.query(User).filter(User.email == email_input, User.password == password_input)
+            result = session.query(User).filter(
+                User.email == email_input, User.password == password_input)
             for user in result:
                 print(f"Welcome {user.name}!")
                 global logged_in_user
-                logged_in_user = user.email       
-                self.manager.current="main"
+                logged_in_user = user.email
+                self.manager.current = "main"
 
-        #self.manager.current="main"
+        # self.manager.current="main"
         #result = session.query(User).filter(User.email == email_input).all()
-        
+
+
 class SignUpScreen(Screen):
     def registerBtn(self):
         email_input = self.email.text
@@ -106,29 +110,36 @@ class SignUpScreen(Screen):
         weight_input = self.weight.text
         gender_input = self.gender.text
         jp_input = self.jp.text
-        
+
         if password_confirmation_input != password_input:
             print("Password unmatch!!")
         else:
-            data = User(email_input, password_input, username_input, age_input,weight_input, gender_input, jp_input)
+            data = User(email_input, password_input, username_input,
+                        age_input, weight_input, gender_input, jp_input)
             session.add(data)
             session.commit()
+
+
 class MainScreen(Screen):
     pass
+
+
 class SettingsScreen(Screen):
     pass
+
+
 class GraphScreen(Screen):
     pass
+
 
 class NotificationScreen(Screen):
     pass
 
+
 class UserProfileScreen(Screen):
-    
+
     # we need to get the user value from the database
     # current_user= session.query(User).filter()
-
-    
 
     def on_pre_enter(self):
         self.callback()
@@ -139,12 +150,10 @@ class UserProfileScreen(Screen):
         for user in result:
             self.username_label.text = user.name
             self.age_label.text = user.age
-            self.weight_label.text=user.weight
-            self.gender_label.text=user.gender
+            self.weight_label.text = user.weight
+            self.gender_label.text = user.gender
             self.jp_label.text = user.jp
 
-
-        
 
 class EditUserProfileScreen(Screen):
 
@@ -157,24 +166,24 @@ class EditUserProfileScreen(Screen):
         for user in result:
             self.chg_username.text = user.name
             self.chg_age.text = user.age
-            self.chg_weight.text=user.weight
+            self.chg_weight.text = user.weight
             self.chg_gender.text = user.gender
             self.chg_jp.text = user.jp
-    
+
     def savechanges(self):
         username_input = self.chg_username.text
         age_input = self.chg_age.text
         weight_input = self.chg_weight.text
         gender_input = self.chg_gender.text
         jp_input = self.chg_jp.text
-        session.update(User.email == logged_in_user).values()
+        session.query(User).filter(User.email == logged_in_user).update(
+            {'name': username_input, 'age': age_input, 'weight': weight_input, 'gender': gender_input, 'jp': jp_input})
+        session.commit()
+        self.manager.current = "settings"
 
-        
 
-
-
-sm=ScreenManager()
-#sm.add_widget(MDScreen(name="md"))
+sm = ScreenManager()
+# sm.add_widget(MDScreen(name="md"))
 sm.add_widget(LoginScreen(name="login"))
 sm.add_widget(SignUpScreen(name="signup"))
 sm.add_widget(MainScreen(name="main"))
@@ -183,31 +192,29 @@ sm.add_widget(GraphScreen(name="graph"))
 sm.add_widget(NotificationScreen(name="notify"))
 sm.add_widget(UserProfileScreen(name="userprofile"))
 sm.add_widget(EditUserProfileScreen(name="edituserprofile"))
-#class ScreenManager(ScreenManager):
- #   pass
+# class ScreenManager(ScreenManager):
+#   pass
 
 
-#class ProfileCard(FloatLayout, FakeRectangleElevationBehaviour):
- #   pass
+# class ProfileCard(FloatLayout, FakeRectangleElevationBehaviour):
+#   pass
 
-#class MovementAnalysis(ProfileCard):
- #   pass
+# class MovementAnalysis(ProfileCard):
+#   pass
 
 
+Window.size = (320, 550)
 
-Window.size = (320,550)
+# GUI= Builder.load_file("main.kv") #Make Sure this is after all clas definitions!
 
-#GUI= Builder.load_file("main.kv") #Make Sure this is after all clas definitions!
 
 class MainApp(MDApp):
 
     def build(self):
         #builder = Builder.load_file("main.kv")
-        #return #builder
+        # return #builder
         pass
 
 
 if __name__ == '__main__':
     MainApp().run()
-
-

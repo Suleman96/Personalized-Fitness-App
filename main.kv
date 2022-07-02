@@ -713,6 +713,7 @@ ScreenManager:
     username_label:username_label
     age_label: age_label
     weight_label:weight_label
+    gender_label:gender_label
     jp_label:jp_label
 
     MDCard:
@@ -818,14 +819,6 @@ ScreenManager:
                 size_hint_y: None
                 height: 20
         
-
-
-
-            MDLabel:
-                text: "FUCK ME! Ahhh!"
-                #text:root.username_text
-                #pos_hint: {"center_x": 0.5}
-
             MDGridLayout:
                 cols:2
                 MDLabel:
@@ -880,8 +873,15 @@ ScreenManager:
         MDChip:
             text: "Save Changes"
             on_release:
+                root.savechanges()
+                # app.root.current= "settings"
+                # root.manager.transition.direction= "right"
+        MDChip:
+            text: "Back"
+            on_release:
                 app.root.current= "settings"
-                root.manager.transition.direction= "right"    
+                root.manager.transition.direction= "right"   
+
 
 
 
